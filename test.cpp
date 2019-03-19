@@ -1,3 +1,4 @@
+//#include "pch.h" <- VS-ben kell csak
 #include <iostream>
 #include <string>
 #include <vector>

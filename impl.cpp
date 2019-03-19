@@ -1,3 +1,4 @@
+//#include "pch.h" <- VS-ben kell csak
 #include "types.hpp"
 #include <iostream>
 
@@ -114,7 +115,15 @@ Map::Map(): rows_(0), cols_(0)
 
 Map::Map(const int r, const int c)
 {
-    
+	if (r >= 0 && c >= 0) {
+		rows_ = r;
+		cols_ = c;
+		for (int i = 0; i < r; i++) {
+			std::vector<FIELD> row(c, FIELD::SEA);
+			map_.push_back(row);
+		}
+	}
+	Map();
 }
     
 int Map::rows() const
@@ -143,43 +152,116 @@ void Map::set_tile(const int i, const int j, const FIELD f)
 		map_.at(i).at(j) = f;
     }
 }
-//INNEN!!!!!!!!!!!!!!!!!!!!
-Tile Map::tile_in_direction(int x, int y, const DIRECTION d) const
-{
-	switch(d) {
-		case DIRECTION::NORTH_WEST:
-		  if(isOdd(y)) {
-			  
-		  }
-		
-		  break;
-		case DIRECTION::NORTH: 
-		
-		  break;
-		case DIRECTION::NORTH_EAST: 
-		
-		  break;
-		case DIRECTION::SOUTH_EAST: 
-		
-		  break;
-		case DIRECTION::SOUTH: 
-		
-		  break;
-		case DIRECTION::SOUTH_WEST: 
-		
-		  break;
-	}
-	
-    return tile_at(0,0);
-}
-
-std::set<Tile> Map::get_tiles_in_radius(const int i, const int j, const int r) const
-{
-    std::set<Tile> s;
-    return s;
-}
 
 bool isOdd(const int x) {
 	return (x % 2 != 0);		
 }
 
+Tile Map::tile_in_direction(int x, int y, const DIRECTION d) const
+{
+	switch(d) {
+		case DIRECTION::NORTH_WEST:
+		  if(isOdd(y)) {
+			return tile_at(x, y-1); 
+		  } else {
+			return tile_at(x-1, y-1); 
+		  }
+		  break;
+		case DIRECTION::NORTH: 
+		  return tile_at(x-1, y); 
+		  break;
+		case DIRECTION::NORTH_EAST: 
+		  if(isOdd(y)) {
+			return tile_at(x, y+1); 
+		  } else {
+			return tile_at(x-1, y+1); 
+		  }
+		  break;
+		case DIRECTION::SOUTH_EAST: 
+		  if(isOdd(y)) {
+			return tile_at(x+1, y+1); 
+		  } else {
+			return tile_at(x, y+1); 
+		  }
+		  break;
+		case DIRECTION::SOUTH:
+		  return tile_at(x+1, y); 		
+		  break;
+		case DIRECTION::SOUTH_WEST: 
+		  if(isOdd(y)) {
+			return tile_at(x+1, y-1); 
+		  } else {
+			return tile_at(x, y-1); 
+		  }
+		  break;
+	}
+}
+
+std::set<Tile> Map::get_tiles_in_radius(const int i, const int j, const int r) const
+{
+	int act_i, act_j;
+    std::set<Tile> s;
+	s.insert(tile_at(i, j));
+
+	for (int q = 1; q <= r; q++) {
+		act_i = i + q;
+		act_j = j;
+		s.insert(tile_at(act_i, act_j));
+
+		// SOUTH_EAST
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::SOUTH_EAST);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+
+		// SOUTH
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::SOUTH);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+
+		// SOUTH_WEST
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::SOUTH_WEST);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+
+		// NORTH_WEST
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::NORTH_WEST);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+
+		// NORTH
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::NORTH);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+
+		// NORTH_EAST
+		for (int p = 0; p < i; p++) {
+			Tile t = tile_in_direction(act_i, act_j, DIRECTION::NORTH_EAST);
+			s.insert(t);
+			Coordinate c = std::get<0>(t);
+			act_i = c.x;
+			act_j = c.y;
+		}
+	}
+
+    return s;
+}
