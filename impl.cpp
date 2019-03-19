@@ -129,21 +129,47 @@ int Map::cols() const
 
 bool Map::in_range(const int x, const int y) const
 {
-    return false;
+	return (x >= 0 && x < rows_ && y >= 0 && y < cols_) ? true : false;
 }
 
 Tile Map::tile_at(const int i,const int j) const
 {
-    return std::make_pair(Coordinate(-1,-1), FIELD::SEA);
+	return (in_range(i, j)) ? std::make_pair(Coordinate(i, j), map_.at(i).at(j)) : std::make_pair(Coordinate(i, j), FIELD::SEA);
 }
 
 void Map::set_tile(const int i, const int j, const FIELD f)
 {
-    
+    if(in_range(i, j)) {
+		map_.at(i).at(j) = f;
+    }
 }
-
+//INNEN!!!!!!!!!!!!!!!!!!!!
 Tile Map::tile_in_direction(int x, int y, const DIRECTION d) const
 {
+	switch(d) {
+		case DIRECTION::NORTH_WEST:
+		  if(isOdd(y)) {
+			  
+		  }
+		
+		  break;
+		case DIRECTION::NORTH: 
+		
+		  break;
+		case DIRECTION::NORTH_EAST: 
+		
+		  break;
+		case DIRECTION::SOUTH_EAST: 
+		
+		  break;
+		case DIRECTION::SOUTH: 
+		
+		  break;
+		case DIRECTION::SOUTH_WEST: 
+		
+		  break;
+	}
+	
     return tile_at(0,0);
 }
 
@@ -151,5 +177,9 @@ std::set<Tile> Map::get_tiles_in_radius(const int i, const int j, const int r) c
 {
     std::set<Tile> s;
     return s;
+}
+
+bool isOdd(const int x) {
+	return (x % 2 != 0);		
 }
 
